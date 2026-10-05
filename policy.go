@@ -1,4 +1,4 @@
-// Command warranty_returns checks a warranty return before money moves. A
+// Command warranty-returns checks a warranty return before money moves. A
 // decision model answers three fixed questions about the return form and the
 // technician's note; code in this file decides if the refund is paid without
 // a human. Code never refuses a customer on its own: a doubtful return goes
