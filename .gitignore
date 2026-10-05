@@ -1,0 +1,12 @@
+# Secrets. Only .env.example is tracked.
+.env
+.env.*
+!.env.example
+
+# Local tooling state.
+.claude/
+.DS_Store
+
+# Build output.
+/warranty_returns
+/warranty-returns
