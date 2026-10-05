@@ -1,0 +1,9 @@
+%%{init: {"flowchart": {"htmlLabels": false}}}%%
+flowchart LR
+    user -- request --> router
+    router --> a1["agent 1"]
+    router --> a2["agent 2"]
+    router --> a3["agent 3"]
+    a1 --> actions
+    a2 --> actions
+    a3 --> actions

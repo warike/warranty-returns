@@ -1,0 +1,11 @@
+%%{init: {"flowchart": {"htmlLabels": false}}}%%
+flowchart LR
+    record --> model
+    model --> boolean
+    model --> category
+    model --> score
+    boolean --> policy
+    category --> policy
+    score --> policy
+    policy --> pay
+    policy --> review

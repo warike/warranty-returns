@@ -1,0 +1,41 @@
+{
+  "measured_on": "2026-10-04",
+  "note": "Numbers behind the charts in the blog post. Five returns, three models, fifteen timed calls per model on the dishwasher record, from a laptop, stopwatch around the HTTP call only. One Jev call returned HTTP 520 and was dropped.",
+  "models": [
+    { "id": "jev", "name": "Jev", "label": "Jev", "vendor": "TypeSafe", "usd_per_m_input": "0.042", "input_tokens_per_record": 569, "color": "#ea580c" },
+    { "id": "clef_flash", "name": "Clef-flash", "label": "Clef-flash, 9B", "vendor": "Cloudflare", "usd_per_m_input": "0.09", "input_tokens_per_record": 493, "color": "#16a34a" },
+    { "id": "clef", "name": "Clef", "label": "Clef, 27B", "vendor": "Cloudflare", "usd_per_m_input": "0.24", "input_tokens_per_record": 493, "color": "#2563eb" }
+  ],
+  "record_words": 33,
+  "scenarios": [
+    { "return": "Dishwasher", "customer": "stopped heating at 3 months", "technician": "element open circuit, no misuse", "expected": "pay" },
+    { "return": "Washing machine", "customer": "loud noise, drum stuck", "technician": "two bricks and a rug in the drum", "expected": "review" },
+    { "return": "Fridge", "customer": "not cooling", "technician": "cools fine, door seal cut with a blade", "expected": "review" },
+    { "return": "Oven", "customer": "glass door cracked on arrival", "technician": "box crushed on the same corner", "expected": "review" },
+    { "return": "Laptop", "customer": "screen flickers at night", "technician": "two hours on the bench, not reproduced", "expected": "review" }
+  ],
+  "match": {
+    "question": "Probability that the customer's story matches the inspection",
+    "rows": [
+      { "return": "Dishwasher", "jev": 0.97, "clef": 0.99, "clef_flash": 0.99, "action": "pay" },
+      { "return": "Washing machine", "jev": 0.78, "clef": 0.50, "clef_flash": 0.35, "action": "review" },
+      { "return": "Fridge", "jev": 0.30, "clef": 0.12, "clef_flash": 0.11, "action": "review" },
+      { "return": "Oven", "jev": 0.83, "clef": 0.17, "clef_flash": 0.08, "action": "review" },
+      { "return": "Laptop", "jev": 0.07, "clef": 0.17, "clef_flash": 0.35, "action": "review" }
+    ]
+  },
+  "latency_ms": {
+    "calls_per_model": 15,
+    "dropped": { "jev": 1, "reason": "HTTP 520" },
+    "jev": { "median": 249, "min": 198, "max": 321 },
+    "clef_flash": { "median": 249, "min": 121, "max": 412 },
+    "clef": { "median": 506, "min": 291, "max": 939 }
+  },
+  "scale_ms": {
+    "calls_per_point": 15,
+    "words": [33, 1933, 7933],
+    "jev": [249, 244, 365],
+    "clef_flash": [249, 335, 275],
+    "clef": [506, 755, 999]
+  }
+}

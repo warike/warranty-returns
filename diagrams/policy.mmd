@@ -1,0 +1,9 @@
+%%{init: {"flowchart": {"htmlLabels": false}}}%%
+flowchart LR
+    answers --> factory{"factory ≥ 0.70"}
+    factory -- yes --> match{"match ≥ 0.70"}
+    factory -- no --> review
+    match -- yes --> refuse{"refuse ≤ 1.0"}
+    match -- no --> review
+    refuse -- yes --> pay
+    refuse -- no --> review

@@ -46,8 +46,20 @@ closed: a bad model response costs a read, never a payment.
 | `policy.go` | The three questions, the thresholds, the decision. |
 | `main.go` | Five sample returns, one table per return, one row per model. |
 | `policy_test.go` | Policy table tests and a fake HTTP server for the client. No network. |
+| `data/results.json` | The answers, latency and cost measured for the write-up. |
+| `scripts/charts.py` | Renders the tables and charts in the write-up from that file, light and dark. |
+| `diagrams/*.mmd` | Mermaid sources for the flow, policy and router diagrams. |
 
-Standard library only.
+Standard library only, in Go and in Python.
+
+## Charts
+
+```sh
+python3 scripts/charts.py   # writes charts/*.svg from data/results.json
+```
+
+The diagrams render with the Mermaid CLI, for example
+`mmdc -i diagrams/flow.mmd -o flow.svg`.
 
 ## Setup
 
