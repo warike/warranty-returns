@@ -52,13 +52,15 @@ def text(x, y, s, fill, **attrs) -> str:
 # --- tables -----------------------------------------------------------------
 
 ROW = 34
-HEAD_Y = 44
+HEAD_Y = 0
 
 
 def table(t: dict, title: str, columns: list[tuple[str, int, str]], rows: list[list[str]]) -> str:
-    """columns: (header, x, anchor). rows: cell strings in column order."""
-    out = [text(0, 22, title, t["title"], font_size=15, font_weight=600)]
-    out.append(f'<rect x="0" y="{HEAD_Y}" width="{WIDTH}" height="{ROW}" fill="{t["head"]}" rx="4"/>')
+    """columns: (header, x, anchor). rows: cell strings in column order.
+
+    The title goes in the SVG <title> only, for screen readers. The visible
+    caption is the sentence in the post that introduces the figure."""
+    out = [f'<rect x="0" y="{HEAD_Y}" width="{WIDTH}" height="{ROW}" fill="{t["head"]}" rx="4"/>']
     for header, x, anchor in columns:
         out.append(text(x, HEAD_Y + 22, header, t["title"], font_weight=600, text_anchor=anchor))
     y = HEAD_Y + ROW
@@ -109,18 +111,14 @@ def answers_table(d: dict, t: dict) -> str:
 
 
 def latency_chart(d: dict, t: dict) -> str:
-    x0, px_per_ms, top, step = 150, 0.46, 52, 56
+    x0, px_per_ms, top, step = 150, 0.46, 8, 56
     lat = d["latency_ms"]
-    n = lat["calls_per_model"]
-    out = [
-        text(x0, 22, "Latency per call, same record, same laptop", t["title"], font_size=15, font_weight=600),
-        text(x0, 40, f"Solid bar = median. Thin line = min to max. {n} calls per model.", t["muted"]),
-    ]
+    out = []
     order = ["jev", "clef_flash", "clef"]
     models = {m["id"]: m for m in d["models"]}
     for i, mid in enumerate(order):
         m, v = models[mid], lat[mid]
-        y = 62 + step * i
+        y = top + 10 + step * i
         med, lo, hi = (x0 + v[k] * px_per_ms for k in ("median", "min", "max"))
         c = m["color"]
         out.append(text(x0 - 10, y + 15, m["label"], t["text"], text_anchor="end"))
@@ -136,19 +134,19 @@ def latency_chart(d: dict, t: dict) -> str:
         out.append(f'<line x1="{fmt(x)}" x2="{fmt(x)}" y1="{top}" y2="{bottom}" stroke="{t["line"]}" stroke-dasharray="3 4"/>')
         out.append(text(x, bottom + 16, ms, t["muted"], text_anchor="middle"))
     out.append(text(380, bottom + 34, "milliseconds per call", t["muted"], text_anchor="middle"))
-    title = "Latency per call, three decision models. Median is the solid bar, the thin line is min to max."
-    return svg(300, title, out)
+    title = (
+        f"Latency per call, three decision models, {lat['calls_per_model']} calls each. "
+        "Median is the solid bar, the thin line is min to max."
+    )
+    return svg(bottom + 44, title, out)
 
 
 def scale_chart(d: dict, t: dict) -> str:
-    x0, x1, base, px_per_ms, ymax = 70, 610, 270, 0.1712, 1250
+    x0, x1, base, px_per_ms, ymax = 70, 610, 240, 0.1712, 1250
     sc = d["scale_ms"]
     words = sc["words"]
     xs = [x0 + (x1 - x0) * i / (len(words) - 1) for i in range(len(words))]
-    out = [
-        text(x0, 22, "Latency as the input grows", t["title"], font_size=15, font_weight=600),
-        text(x0, 40, f"Median of {sc['calls_per_point']} calls per point. Flat line = input size does not matter.", t["muted"]),
-    ]
+    out = []
     for ms in range(0, ymax + 1, 250):
         y = base - ms * px_per_ms
         out.append(f'<line x1="{x0}" x2="{x1}" y1="{fmt(y)}" y2="{fmt(y)}" stroke="{t["line"]}" stroke-dasharray="3 4"/>')
@@ -156,7 +154,7 @@ def scale_chart(d: dict, t: dict) -> str:
     for x, w in zip(xs, words):
         out.append(text(x, base + 18, f"{w:,}", t["muted"], text_anchor="middle"))
     out.append(text((x0 + x1) / 2, base + 36, "words in the record", t["muted"], text_anchor="middle"))
-    out.append(text(x0 - 8, 46, "ms", t["muted"], text_anchor="end", font_size=11))
+    out.append(text(x0 - 8, 16, "ms", t["muted"], text_anchor="end", font_size=11))
 
     models = {m["id"]: m for m in d["models"]}
     legend = []
@@ -176,10 +174,10 @@ def scale_chart(d: dict, t: dict) -> str:
         out.append(text(x1 + 12, y, m["label"], m["color"], font_weight=600))
         out.append(text(x1 + 12, y + 15, " / ".join(str(v) for v in sc[m["id"]]) + " ms", t["muted"], font_size=11))
     title = (
-        f"Median latency per call as the input grows from {words[0]} to {words[-1]:,} words. "
+        f"Median of {sc['calls_per_point']} calls per point as the input grows from {words[0]} to {words[-1]:,} words. "
         "Jev stays flat, Clef stays slow, Clef-flash sits between."
     )
-    return svg(320, title, out)
+    return svg(base + 50, title, out)
 
 
 FIGURES = {
